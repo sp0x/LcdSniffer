@@ -36,7 +36,7 @@ volatile char d0,d1,d2,d3,d4,d5,d6,d7,var;
 //Offsets
 #define OFFSET_R1 0x40
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(250000);
   FastGPIO::Pin<RS>::setInput();    //Define RS
   FastGPIO::Pin<EN>::setInput();    //Define EN
   FastGPIO::Pin<RW>::setInput();    //Define R/W
@@ -98,14 +98,9 @@ inline void handleData(){
   if(si>16) si=0;
   char rcv = readBytes();
   msgbuff[si++] = rcv;
-  //char dt[10];
-  //sprintf(dt, "%d %c p:%d", rcv, rcv, si);
-  //Serial.println(dt);
-  if(si>=3){
-    unsigned long currentMillis = millis();
-    if(currentMillis - previousMillis > interval) {  
-      Serial.println(msgbuff);
-    }  
+  //Limit the serial write to longer strings, to gain some performance
+  if(si>=8){
+    Serial.println(msgbuff); 
   }  
 }
 
